@@ -1,0 +1,44 @@
+name: Build
+
+# build timings
+on:
+  push:
+    branches:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: centos:8
+    steps:
+
+    # Get files
+    - name: Get files
+      uses: actions/checkout@v1
+
+    # Build zapcc
+    - name: Build zapcc
+      run: |
+        dnf upgrade -y
+        dnf install -y git gcc gcc-c++ cmake python27
+        dnf --enablerepo=PowerTools install -y ninja-build
+        git submodule update --init --recursive --recommend-shallow --depth 1
+
+        mkdir -p zapcc/build
+        cd zapcc/build
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_WARNINGS=OFF ..
+        ninja -j4
+        cd ../..
+
+    # Build RPM Package
+    - name: Build RPM Package
+      run: |
+        dnf install -y rpm-build
+        mkdir -p ./rpmbuild/
+        export SRC=$(pwd) && rpmbuild --define "_topdir $(pwd)/rpmbuild/" -bb zapcc.spec
+
+    # Packaging
+    - name: Upload archive
+      uses: actions/upload-artifact@v1
+      with:
+        name: x86_64
+        path: rpmbuild/RPMS/x86_64/zapcc-7.0.0-1.x86_64.rpm
