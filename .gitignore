@@ -1,0 +1,9 @@
+# rpmbuild
+rpmbuild/
+BUILD/
+BUILDROOT/
+RPMS/
+SOURCES/
+SPECS/
+SRPMS/
+*.rpm
