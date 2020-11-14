@@ -38,7 +38,7 @@ jobs:
 
     # Packaging
     - name: Upload archive
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v2
       with:
-        name: x86_64
+        name: x86_64-unknown-linux-gnu
         path: rpmbuild/RPMS/x86_64/zapcc-7.0.0-1.x86_64.rpm
