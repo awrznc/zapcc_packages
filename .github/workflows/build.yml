@@ -27,14 +27,17 @@ jobs:
         cd zapcc/build
         cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_WARNINGS=OFF ..
         ninja -j4
+        cd ../..
 
     # Build RPM Package
     - name: Build RPM Package
       run: |
         dnf install -y platform-python-devel rpm-build
-        pathfix.py -pn -i /usr/bin/python3 ./../
-        pathfix.py -pn -i /usr/bin/python3 ./../tools/clang/tools/clang-format/git-clang-format
-        pathfix.py -pn -i /usr/bin/python3 ./../tools/clang/tools/scan-view/bin/scan-view
+        pathfix.py -pn -i /usr/bin/python3 ./zapcc/
+        pathfix.py -pn -i /usr/bin/python3 ./zapcc/tools/clang/tools/clang-format/git-clang-format
+        pathfix.py -pn -i /usr/bin/python3 ./zapcc/tools/clang/tools/clang-format/clang-format-diff.py
+        pathfix.py -pn -i /usr/bin/python3 ./zapcc/tools/clang/tools/scan-view/bin/scan-view
+        cd zapcc/build
         cpack -G RPM CPackConfig.cmake
 
     # Packaging
