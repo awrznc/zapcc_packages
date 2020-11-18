@@ -27,18 +27,19 @@ jobs:
         cd zapcc/build
         cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_WARNINGS=OFF ..
         ninja -j4
-        cd ../..
 
     # Build RPM Package
     - name: Build RPM Package
       run: |
-        dnf install -y rpm-build
-        mkdir -p ./rpmbuild/
-        export SRC=$(pwd) && rpmbuild --define "_topdir $(pwd)/rpmbuild/" -bb zapcc.spec
+        dnf install -y platform-python-devel rpm-build
+        pathfix.py -pn -i /usr/bin/python3 ./../
+        pathfix.py -pn -i /usr/bin/python3 ./../tools/clang/tools/clang-format/git-clang-format
+        pathfix.py -pn -i /usr/bin/python3 ./../tools/clang/tools/scan-view/bin/scan-view
+        cpack -G RPM CPackConfig.cmake
 
     # Packaging
     - name: Upload archive
       uses: actions/upload-artifact@v2
       with:
         name: x86_64-unknown-linux-gnu
-        path: rpmbuild/RPMS/x86_64/zapcc-7.0.0-1.x86_64.rpm
+        path: zapcc/build/LLVM-7.0.0svn-Linux.rpm
